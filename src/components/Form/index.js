@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Keyboard, Vibration} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Keyboard, Vibration, Pressable} from "react-native";
 import ResultImc from "./ResultImc";
 import styles from "./style";
 
@@ -13,7 +13,8 @@ export default function Form(){
     const [errorMessage, setErrorMessage] = useState(null);
 
     function calculateBMI(){
-        return setBMI((weight/(height * height)).toFixed(2))
+        let heightFormat = height.replace(",", ".")
+        return setBMI((weight/(heightFormat * heightFormat)).toFixed(2))
     }
 
     function verificationImc(){
@@ -31,16 +32,17 @@ export default function Form(){
             setBMIStatus("Your BMI is: ")
             setButtonText("Calculate Again")
             setErrorMessage(null)
-            return;
+        
+        }else{
+            verificationImc()
+            setBMI(null)
+            setButtonText("Calculate")
+            setBMIStatus("Please enter weight and height")
         }
-        verificationImc()
-        setBMI(null)
-        setButtonText("Calculate")
-        setBMIStatus("Please enter weight and height")
     }
 
     return (
-      <View style={styles.formContext}>
+      <Pressable onPress={Keyboard.dismiss} style={styles.formContext}>
         <View style={styles.form}>
             <Text style={styles.formLabel}>Height</Text>
             <Text style={styles.errorMessage}>{errorMessage}</Text>
@@ -53,6 +55,6 @@ export default function Form(){
             </TouchableOpacity>
         </View>
         <ResultImc messageResultImc={messageImc} resultImc={bmi}/>
-      </View>
+      </Pressable>
     );
 }
