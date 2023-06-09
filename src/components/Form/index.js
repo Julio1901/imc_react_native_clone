@@ -1,20 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Keyboard, Vibration, Pressable} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Keyboard, Vibration, Pressable, FlatList} from "react-native";
 import ResultImc from "./ResultImc";
 import styles from "./style";
 
 export default function Form(){
-    
     const [height, setHeight] = useState(null);
     const [weight, setWeight] = useState(null);
     const [messageImc, setBMIStatus] = useState("Please enter weight and height");
     const [bmi, setBMI] = useState(null);
     const [textButton, setButtonText] = useState("Calculate");
     const [errorMessage, setErrorMessage] = useState(null);
+    const [imcList , setImcList] = useState([]);
 
     function calculateBMI(){
-        let heightFormat = height.replace(",", ".")
-        return setBMI((weight/(heightFormat * heightFormat)).toFixed(2))
+        let heightFormat = height.replace(",", ".");
+        let totalImc = (weight / (heightFormat * heightFormat)).toFixed(2);
+        setImcList( (arr) =>  [...arr, {id: new Date().getTime(), imc: totalImc}])
+        setBMI(totalImc);
+        imcList.forEach(i => {
+            console.log(i)
+        })
     }
 
     function verificationImc(){
@@ -25,7 +30,7 @@ export default function Form(){
     }
 
     function validateBMI() {
-        if (weight !== null && height !== null) {
+        if (weight != null && height != null) {
             calculateBMI()
             setHeight(null)
             setWeight(null)
@@ -40,7 +45,6 @@ export default function Form(){
             setBMIStatus("Please enter weight and height")
         }
     }
-
     return (
      
         <View style={styles.formContext}>
@@ -63,7 +67,23 @@ export default function Form(){
                     <Text style={styles.textButtonCalculator}>{textButton}</Text>
                 </TouchableOpacity>
             </View>
+            
             }
+       
+        <FlatList style={styles.listImcs} data={imcList.reverse()} renderItem={({item}) => {
+               
+            return (
+                <Text style={styles.resultImcItem}>
+                    <Text style={styles.textResulItemList}>BMI Result =   </Text>
+                    {item.imc}
+                </Text>
+            )
+        }}  
+        keyExtractor={(item) => {
+            item.id
+        }}
+        /> 
       </View>
     );
+
 }
